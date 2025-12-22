@@ -1,7 +1,25 @@
-import {Button, Card, Checkbox, Flex, Form, Input, Layout, Space} from 'antd';
+import {Alert, Button, Card, Checkbox, Flex, Form, Input, Layout, Space} from 'antd';
 import { LockFilled, UserOutlined } from '@ant-design/icons';
 import Logo from '../../components/icons/Logo';
+import { useMutation } from '@tanstack/react-query';
+import type { LoginFormValues } from '../../types';
+import { login } from '../../http/api';
+
+const loginFunction =async (values: LoginFormValues) => {
+    const {data} = await login(values);
+    return data;
+}
+
 export default function LoginPage() {
+
+    const {mutate, isPending, isError, error} = useMutation({
+        mutationKey: ['login'],
+        mutationFn: loginFunction,
+        onSuccess: async () => {
+            console.log('Login successful');
+        }
+    })
+   
   return (
     <>
         <Layout  style={{height: '100vh', display: 'grid', placeItems: 'center'}} >
@@ -17,7 +35,8 @@ export default function LoginPage() {
                     'Sign in'
                 </Space>
               }>
-                <Form>
+                <Form onFinish={(values) => mutate({email: values.username, password: values.password})} >
+                    {isError && <Alert style={{marginBottom: 16}} message={error.message} type='error' />}
                     <Form.Item name='username' rules={[{required: true, message: 'Please input your username!'}, {type: 'email', message: 'Please enter a valid email address!'}]} >
                         <Input prefix={<UserOutlined/>} placeholder='Username' />
                     </Form.Item>
@@ -31,7 +50,7 @@ export default function LoginPage() {
                         <a href="" id='login-form-forgot' >Forgot</a>
                     </Flex>
                     <Form.Item>
-                        <Button type='primary' htmlType='submit' style={{width: '100%'}} >
+                        <Button type='primary' htmlType='submit' style={{width: '100%'}} loading={isPending}>
                             Log In
                         </Button>
                     </Form.Item>

@@ -1,7 +1,29 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import React from 'react';
 import {render, screen, fireEvent, waitFor, cleanup} from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LoginPage from './Login';
+
+// Create a test wrapper with QueryClientProvider
+const createWrapper = () => {
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                retry: false,
+            },
+            mutations: {
+                retry: false,
+            },
+        },
+    });
+    
+    return ({ children }: { children: React.ReactNode }) => (
+        <QueryClientProvider client={queryClient}>
+            {children}
+        </QueryClientProvider>
+    );
+};
 
 describe('Login Page', () => {
     afterEach(() => {
@@ -9,7 +31,7 @@ describe('Login Page', () => {
     });
 
     it('should render with required fields', ()=> {
-        render(<LoginPage/>);
+        render(<LoginPage/>, { wrapper: createWrapper() });
         expect(screen.getByText(/Sign in/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
@@ -19,7 +41,7 @@ describe('Login Page', () => {
 
     describe('Validation Rules', () => {
         it('should show error when username is empty on submit', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const submitButton = screen.getByRole('button', { name: 'Log In'});
             fireEvent.click(submitButton);
 
@@ -29,7 +51,7 @@ describe('Login Page', () => {
         });
 
         it('should show error when username is not a valid email', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const usernameInput = screen.getByPlaceholderText('Username');
             const submitButton = screen.getByRole('button', { name: 'Log In'});
 
@@ -42,7 +64,7 @@ describe('Login Page', () => {
         });
 
         it('should show error when password is empty on submit', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const submitButton = screen.getByRole('button', { name: 'Log In'});
             fireEvent.click(submitButton);
 
@@ -52,7 +74,7 @@ describe('Login Page', () => {
         });
 
         it('should show error when password is less than 8 characters', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const passwordInput = screen.getByPlaceholderText('Password');
             const submitButton = screen.getByRole('button', { name: 'Log In'});
 
@@ -65,7 +87,7 @@ describe('Login Page', () => {
         });
 
         it('should show multiple validation errors when both fields are invalid', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const usernameInput = screen.getByPlaceholderText('Username');
             const passwordInput = screen.getByPlaceholderText('Password');
             const submitButton = screen.getByRole('button', { name: 'Log In'});
@@ -81,7 +103,7 @@ describe('Login Page', () => {
         });
 
         it('should not show validation errors when form is valid', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const usernameInput = screen.getByPlaceholderText('Username');
             const passwordInput = screen.getByPlaceholderText('Password');
             const submitButton = screen.getByRole('button', { name: 'Log In'});
@@ -99,7 +121,7 @@ describe('Login Page', () => {
         });
 
         it('should validate email format correctly', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const usernameInput = screen.getByPlaceholderText('Username');
             const submitButton = screen.getByRole('button', { name: 'Log In'});
 
@@ -128,7 +150,7 @@ describe('Login Page', () => {
         });
 
         it('should validate password minimum length correctly', async () => {
-            render(<LoginPage/>);
+            render(<LoginPage/>, { wrapper: createWrapper() });
             const passwordInput = screen.getByPlaceholderText('Password');
             const submitButton = screen.getByRole('button', { name: 'Log In'});
 
