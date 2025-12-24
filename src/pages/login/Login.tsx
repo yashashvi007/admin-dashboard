@@ -3,8 +3,9 @@ import { LockFilled, UserOutlined } from '@ant-design/icons';
 import Logo from '../../components/icons/Logo';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { LoginFormValues, User } from '../../types';
-import { getSelf, login } from '../../http/api';
+import { getSelf, login, logout } from '../../http/api';
 import { useAuthStore } from '../../store';
+import { usePermission } from '../../hooks/usePermission';
 
 const loginFunction =async (values: LoginFormValues) => {
     const {data} = await login(values);
@@ -12,7 +13,8 @@ const loginFunction =async (values: LoginFormValues) => {
 }
 
 export default function LoginPage() {
-    const setUser = useAuthStore((state) => state.setUser);
+    const {isAllowed} = usePermission();
+    const {setUser, logoutFromStore} = useAuthStore();
 
     const { refetch: refetchSelf } = useQuery({
         queryKey: ['self'],
@@ -20,12 +22,24 @@ export default function LoginPage() {
         enabled: false,
     })
 
+    const {mutate: logoutMutation} = useMutation({
+        mutationKey: ['logout'],
+        mutationFn: logout,
+        onSuccess: () => {
+            logoutFromStore();
+            return;
+        }
+    })
+
     const {mutate, isPending, isError, error} = useMutation({
         mutationKey: ['login'],
         mutationFn: loginFunction,
         onSuccess: async () => {
             const selfResponse = await refetchSelf();
-            setUser(selfResponse?.data as unknown as User);
+            if(!isAllowed(selfResponse?.data?.data.role)) {
+                logoutMutation();
+            }
+            setUser(selfResponse?.data?.data as unknown as User);
         }
     })
    
