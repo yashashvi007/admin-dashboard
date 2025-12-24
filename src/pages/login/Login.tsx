@@ -36,8 +36,9 @@ export default function LoginPage() {
         mutationFn: loginFunction,
         onSuccess: async () => {
             const selfResponse = await refetchSelf();
-            if(!isAllowed(selfResponse?.data?.data.role)) {
+            if(!isAllowed(selfResponse?.data?.data)) {
                 logoutMutation();
+                return;
             }
             setUser(selfResponse?.data?.data as unknown as User);
         }
