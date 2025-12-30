@@ -1,7 +1,7 @@
 import { Navigate, NavLink, Outlet } from 'react-router-dom'
 import { useAuthStore } from '../store'
 import { Avatar, Dropdown, Layout, Menu, Space, theme } from 'antd';
-import { useMemo, useState } from 'react';
+import {  useState } from 'react';
 import Logo from '../components/icons/Logo';
 import Icon, { BellFilled } from '@ant-design/icons';
 import Home from '../components/icons/Home';
@@ -9,8 +9,7 @@ import UserIcon from '../components/icons/UserIcon';
 import { foodIcon } from '../components/icons/FoodIcon';
 import GiftIcon from '../components/icons/GiftIcon';
 import BasketIcon from '../components/icons/BasketIcon';
-import { Badge, Button, Flex, Segmented } from 'antd';
-import type { FlexProps } from 'antd';
+import { Badge, Flex } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import { logout } from '../http/api';
 

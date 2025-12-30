@@ -1,11 +1,12 @@
-import { RightOutlined } from '@ant-design/icons'
+import { PlusOutlined, RightOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
-import { Breadcrumb, Space, Table } from 'antd'
+import { Breadcrumb, Button, Drawer, Space, Table } from 'antd'
 import { Link, Navigate } from 'react-router-dom'
 import { getUsers } from '../../http/api'
 import type { User } from '../../types'
 import { useAuthStore } from '../../store'
 import UserFilters from './UserFilters'
+import { useState } from 'react'
 
   
 const columns = [
@@ -50,6 +51,7 @@ const columns = [
   ];
 
 export default function Users() {
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const {data: usersData, isLoading, isError, error} = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
@@ -68,12 +70,33 @@ export default function Users() {
         <Breadcrumb separator={<RightOutlined/>} items={[{title: <Link to="/" >Dashboard</Link>}, {title: 'Users'}]} />
         <UserFilters onFilterChange={(filterName, filterValue)=> {
             console.log(filterName, filterValue);
-        }}/>
+        }}>
+            <Button type="primary" onClick={()=> setDrawerOpen(true)} icon={<PlusOutlined />}>Add User</Button>
+        </UserFilters>
         {isLoading && <div>Loading...</div>}
         {isError && <div>Error: {error.message}</div>}
         {usersData && (
             <Table dataSource={usersData} columns={columns} />
         )}
+
+        <Drawer
+          title="Add User"
+          width={720}
+          destroyOnHidden={true}
+          open={drawerOpen}
+          onClose={()=> {
+            setDrawerOpen(false);
+          }}
+          extra={
+            <Space>
+              <Button>Cancel</Button>
+              <Button type="primary" >Submit</Button>
+            </Space>
+          }
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Drawer>
        </Space>
     </> 
   )
