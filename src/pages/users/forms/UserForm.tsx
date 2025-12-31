@@ -1,6 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
 import { Card, Col, Form, Input, Row, Select, Space } from "antd";
+import { getTenants } from "../../../http/api";
+import type { Tenant } from "../../../types";
 
 export default function UserForm() {
+    const {data: tenantsData, isLoading: isTenantsLoading} = useQuery({
+        queryKey: ['tenants'],
+        queryFn: async ()  => {
+            const {data} = await getTenants();
+            return data;
+        }
+    });
   return (
     <Row>
         <Col span={24} >
@@ -63,10 +73,11 @@ export default function UserForm() {
                           allowClear={true}
                           onChange={() => {}}
                           placeholder="Select Tenant"
+                          loading={isTenantsLoading}
                         >
-                          <Select.Option value="1" >Tenant 1</Select.Option>
-                          <Select.Option value="2" >Tenant 2</Select.Option>
-                          <Select.Option value="3" >Tenant 3</Select.Option>
+                          {tenantsData && tenantsData.map((tenant: Tenant) => (
+                            <Select.Option key={tenant.id} value={tenant.id}>{tenant.name}</Select.Option>
+                          ))}
                         </Select>
                    </Form.Item>
                  </Col>

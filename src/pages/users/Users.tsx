@@ -9,7 +9,6 @@ import UserFilters from './UserFilters'
 import { useState } from 'react'
 import UserForm from './forms/UserForm'
 
-  
 const columns = [
     {
       title: 'First Name',
