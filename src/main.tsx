@@ -16,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
         token: {
           colorPrimary: '#F65F42',
           colorLink: '#F65F42',
+          colorBgElevated: '#fafafa',
         }
       }} >
         <RouterProvider router={router} />
