@@ -18,17 +18,36 @@ export default function UserForm() {
            <Card title="Basic Information" variant="borderless" >
               <Row gutter={16} >
               <Col span={12} >
-                    <Form.Item  label="First Name" name="firstName" >
+                    <Form.Item  label="First Name" name="firstName" rules={[
+                        {
+                            required: true,
+                            message: 'Please input your first name!'
+                        }
+                    ]} >
                     <Input size="large" placeholder="Basic usage" />
                 </Form.Item>
                 </Col>
                 <Col span={12} >
-                    <Form.Item  label="Last Name" name="lastName" >
+                    <Form.Item  label="Last Name" name="lastName" rules={[
+                        {
+                            required: true,
+                            message: 'Please input your last name!'
+                        }
+                    ]} >
                     <Input size="large" placeholder="Basic usage" />
                 </Form.Item>
                 </Col>
                 <Col span={12} >
-                    <Form.Item  label="Email" name="email" >
+                    <Form.Item  label="Email" name="email" rules={[
+                        {
+                            required: true,
+                            message: 'Please input your email!'
+                        },
+                        {
+                            type: 'email',
+                            message: 'Please enter a valid email address!'
+                        }
+                    ]} >
                     <Input size="large" placeholder="Basic usage" />
                 </Form.Item>
                 </Col>
@@ -38,12 +57,26 @@ export default function UserForm() {
            <Card title="Security Information" variant="borderless" >
              <Row gutter={16} >
                 <Col span={12} >
-                    <Form.Item  label="Password" name="password" >
+                    <Form.Item  label="Password" name="password" rules={[
+                        {
+                            required: true,
+                            message: 'Please input your password!'
+                        },
+                        {
+                            min: 8,
+                            message: 'Password must be at least 8 characters long!'
+                        }
+                    ]} >
                     <Input size="large" placeholder="Basic usage" />
                 </Form.Item>
                 </Col>
                 <Col span={12} >
-                    <Form.Item  label="Confirm Password" name="confirmPassword" >
+                    <Form.Item  label="Confirm Password" name="confirmPassword" rules={[
+                        {
+                            required: true,
+                            message: 'Please confirm your password!'
+                        }
+                    ]} >
                     <Input size="large" placeholder="Basic usage" />
                 </Form.Item>
                 </Col>
@@ -53,7 +86,12 @@ export default function UserForm() {
            <Card title="Role" variant="borderless" >
               <Row gutter={16} >
                  <Col span={12} >
-                   <Form.Item  label="Role" name="role" >
+                   <Form.Item  label="Role" name="role" rules={[
+                    {
+                        required: true,
+                        message: 'Please select a role!'
+                    }
+                   ]} >
                       <Select
                         style={{width: '100%'}}
                         allowClear={true}
@@ -67,7 +105,12 @@ export default function UserForm() {
                    </Form.Item>
                  </Col>
                  <Col span={12} >
-                   <Form.Item  label="Tenant" name="tenant" > 
+                   <Form.Item  label="Tenant" name="tenant" rules={[
+                    {
+                        required: true,
+                        message: 'Please select a tenant!'
+                    }
+                   ]} > 
                         <Select
                           style={{width: '100%'}}
                           allowClear={true}
