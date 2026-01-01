@@ -8,6 +8,7 @@ import { useAuthStore } from '../../store'
 import UserFilters from './UserFilters'
 import { useState } from 'react'
 import UserForm from './forms/UserForm'
+import { CURRENT_PAGE, PER_PAGE } from '../../constants'
 
 const columns = [
     {
@@ -54,13 +55,19 @@ export default function Users() {
     const {
         token: { colorBgElevated }
     } = theme.useToken();
+
+    const [queryParams, setQueryParams] = useState({
+        perPage: PER_PAGE,
+        currentPage: CURRENT_PAGE
+    })
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [form] = Form.useForm();
     const queryClient = useQueryClient();
     const {data: usersData, isLoading, isError, error} = useQuery({
-        queryKey: ['users'],
+        queryKey: ['users', queryParams],
         queryFn: async () => {
-            const {data} = await getUsers();
+            const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString();
+            const {data} = await getUsers(queryString);
             return data;
         }
       })
@@ -80,9 +87,13 @@ export default function Users() {
     }
    })
 
-   const onHandleSubmit =async () => {
-    await form.validateFields();
-    userMutation(form.getFieldsValue());
+   const onHandleSubmit = async () => {
+    try {
+      await form.validateFields();
+      userMutation(form.getFieldsValue());
+    } catch (errorInfo) {
+      console.log('Validation failed:', errorInfo);
+    }
    }
    if(user?.role !== 'admin') {
     return <Navigate to="/" replace={true} />
@@ -100,7 +111,20 @@ export default function Users() {
         {isLoading && <div>Loading...</div>}
         {isError && <div>Error: {error.message}</div>}
         {usersData && (
-            <Table dataSource={usersData} columns={columns} />
+            <Table dataSource={usersData.data} columns={columns} rowKey="id" pagination={{
+                total: usersData.total,
+                pageSize: queryParams.perPage,
+                current: queryParams.currentPage,
+                onChange: (page, pageSize) => {
+                    setQueryParams((prev) => {
+                        return {
+                            ...prev,
+                            currentPage: page,
+                            perPage: pageSize 
+                        }
+                    })
+                }
+            }} />
         )}
 
         <Drawer
