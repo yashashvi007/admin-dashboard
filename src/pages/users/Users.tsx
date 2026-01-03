@@ -118,7 +118,7 @@ export default function Users() {
                 ...changedFilterFields
             }
         })
-    }, 1000),
+    }, 500),
     []
    )
 
@@ -128,17 +128,17 @@ export default function Users() {
         acc[fieldName] = String(field.value ?? '');
         return acc;
      }, {} as Record<string, string>);
-     if('q' in  changedFilterFields) {
+     if('q' in changedFilterFields) {
         debouncedQUpdate(changedFilterFields)
      }else {
         setQueryParams((prev) => {
             return {
                 ...prev,
-                ...changedFilterFields
+                ...changedFilterFields,
+                currentPage: CURRENT_PAGE,
             }
          })
      }
-     
    }
 
    if(user?.role !== 'admin') {
