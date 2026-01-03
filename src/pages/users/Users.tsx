@@ -171,6 +171,9 @@ export default function Users() {
                             perPage: pageSize 
                         }
                     })
+                },
+                showTotal: (total: number, range: number[]) => {
+                    return `Showing ${range[0]} to ${range[1]} of ${total} users`
                 }
             }} />
         )}
