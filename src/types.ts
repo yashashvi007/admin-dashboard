@@ -17,3 +17,8 @@ export interface User {
     role: string;
     tenant: Tenant | null;
 }
+
+export interface FieldData {
+    name: string[],
+    value: string
+}
