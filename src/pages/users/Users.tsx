@@ -1,6 +1,6 @@
 import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from 'antd'
+import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, Tag, theme, Typography } from 'antd'
 import type { FormProps } from 'antd'
 import { Link, Navigate } from 'react-router-dom'
 import { createUser, getUsers } from '../../http/api'
@@ -39,6 +39,16 @@ const columns = [
         title: 'Role',
         dataIndex: 'role',
         key: 'role',
+    },
+    {
+        title: 'Tenant',
+        dataIndex: 'tenant',
+        key: 'tenant',
+        render: (_text: string, record: User) => {
+            return  (
+               record.tenant ? <Tag color="blue" >{record.tenant.name}</Tag> : <Tag color="red" >No Tenant</Tag>
+            )
+          }
     },
     {
         title: 'Action',
