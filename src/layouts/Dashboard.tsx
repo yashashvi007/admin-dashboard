@@ -1,4 +1,4 @@
-import { Navigate, NavLink, Outlet } from 'react-router-dom'
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store'
 import { Avatar, Dropdown, Layout, Menu, Space, theme } from 'antd';
 import {  useState } from 'react';
@@ -52,6 +52,7 @@ const getMenuItems = (role: string) => {
 
 
 export default function Dashboard() {
+   const location = useLocation();
     const {logoutFromStore, user}  = useAuthStore();
     const {mutate: logoutMutate} = useMutation({
       mutationKey: ['logout'],
@@ -67,7 +68,7 @@ export default function Dashboard() {
       } = theme.useToken();
     const menuItems = getMenuItems(user?.role ||  '');
     if(!user){
-        return <Navigate to="/auth/login" replace={true} />
+        return <Navigate to={`/auth/login?returnTo=${location.pathname}`} replace={true} />
     }
   return (
     <Layout style={{ minHeight: '100vh', background: colorBgContainer }}>

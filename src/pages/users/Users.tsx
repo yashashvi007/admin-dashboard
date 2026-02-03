@@ -1,4 +1,4 @@
-import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons'
+import { EditOutlined, LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, Tag, theme, Typography } from 'antd'
 import type { FormProps } from 'antd'
@@ -7,7 +7,7 @@ import { createUser, getUsers } from '../../http/api'
 import type { User } from '../../types'
 import { useAuthStore } from '../../store'
 import UserFilters from './UserFilters'
-import {useMemo, useState } from 'react'
+import {useEffect, useMemo, useState } from 'react'
 import UserForm from './forms/UserForm'
 import { CURRENT_PAGE, PER_PAGE } from '../../constants'
 import { debounce } from 'lodash'
@@ -50,18 +50,7 @@ const columns = [
             )
           }
     },
-    {
-        title: 'Action',
-        key: 'action',
-        render: () => {
-            return (
-                <div>
-                    <Link to="/users/edit" >Edit</Link>
-                </div>
-            )
-        }
-    }
-  ];
+];
 
 export default function Users() {
     const {
@@ -75,6 +64,7 @@ export default function Users() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [form] = Form.useForm();
     const [filterForm] = Form.useForm();
+    const [currentEditUser, setCurrentEditUser] = useState<User | null>(null);
     const queryClient = useQueryClient();
     const {data: usersData, isFetching, isError, error} = useQuery({
         queryKey: ['users', queryParams],
@@ -102,11 +92,16 @@ export default function Users() {
    })
 
    const onHandleSubmit = async () => {
-    try {
-      await form.validateFields();
-      userMutation(form.getFieldsValue());
-    } catch (errorInfo) {
-      console.log('Validation failed:', errorInfo);
+    const isEditMode = !!currentEditUser;
+    if(isEditMode) {
+        console.log('Edit mode');
+    }else {
+        try {
+            await form.validateFields();
+            userMutation(form.getFieldsValue());
+        } catch (errorInfo) {
+            console.log('Validation failed:', errorInfo);
+        }
     }
    }
 
@@ -141,6 +136,19 @@ export default function Users() {
      }
    }
 
+   useEffect(()=> {
+    if(currentEditUser) {
+        form.setFieldsValue({
+            firstName: currentEditUser.firstName,
+            lastName: currentEditUser.lastName,
+            email: currentEditUser.email,
+            role: currentEditUser.role,
+            tenantId: currentEditUser.tenant?.id
+        });
+        setDrawerOpen(true);
+    }
+   },[currentEditUser, form]);
+
    if(user?.role !== 'admin') {
     return <Navigate to="/" replace={true} />
    }
@@ -159,7 +167,22 @@ export default function Users() {
             </UserFilters>
         </Form>
         {usersData && (
-            <Table dataSource={usersData.data} columns={columns} rowKey="id" pagination={{
+            <Table dataSource={usersData.data} columns={[
+                ...columns,
+                {
+                    title: 'Action',
+                    key: 'action',
+                    render: (_: string, record: User) => {
+                        return (
+                            <Space>
+                                <Button type='link' onClick={()=> {
+                                    setCurrentEditUser(record)
+                                }}  icon={<EditOutlined />}>Edit</Button>
+                            </Space>
+                        )
+                    }
+                }
+            ]} rowKey="id" pagination={{
                 total: usersData.total,
                 pageSize: queryParams.perPage,
                 current: queryParams.currentPage,
@@ -179,13 +202,14 @@ export default function Users() {
         )}
 
         <Drawer
-          title="Add User"
+          title={currentEditUser ? 'Edit User' : 'Add User'}
           width={720}
           styles={{body: {backgroundColor: colorBgElevated }}}
           destroyOnHidden={true}
           open={drawerOpen}
           onClose={()=> {
             form.resetFields();
+            setCurrentEditUser(null);
             setDrawerOpen(false);
           }}
           extra={
@@ -199,7 +223,7 @@ export default function Users() {
           }
         >
           <Form form={form} layout="vertical">
-           <UserForm />
+           <UserForm  isEditMode={!!currentEditUser} />
           </Form>
         </Drawer>
        </Space>
