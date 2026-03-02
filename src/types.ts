@@ -23,3 +23,11 @@ export interface FieldData {
     name: string[],
     value: string
 }
+
+export interface CategoryData {
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+}
