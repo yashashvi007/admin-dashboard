@@ -18,3 +18,4 @@ export const updateUser = async (user: User, id: number) => api.patch(`${USERS_S
 
 // catalog services
 export const getCategories = async (queryString: string = '') => api.get(queryString ? `${CATALOG_SERVICE}/categories?${queryString}` : `${CATALOG_SERVICE}/categories`);
+export const getProducts = async (queryString: string) => api.get(`${CATALOG_SERVICE}/products?${queryString}`);

@@ -31,3 +31,13 @@ export interface CategoryData {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface Product {
+    _id: string;
+    name: string;
+    description: string;
+    category: CategoryData[]; // backend returns an array
+    isPublished: boolean;
+    createdAt: string;
+    updatedAt?: string;
+}
